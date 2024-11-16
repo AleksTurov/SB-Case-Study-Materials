@@ -1,5 +1,5 @@
 # Используем официальный образ Python
-FROM python:3.12-slim
+FROM python:3.11-slim
 
 # Устанавливаем зависимости для работы с CatBoost
 RUN apt-get update && apt-get install -y \
