@@ -25,6 +25,11 @@ def preprocess_data_rents(df):
     
     # Replace NaN values in categorical features with 'missing'
     df = df.apply(lambda x: x.fillna('missing') if x.dtype == 'object' else x)
+    
+    # Convert categorical features to numerical codes
+    categorical_features = df.select_dtypes(include=['object']).columns
+    for col in categorical_features:
+        df[col] = df[col].astype('category').cat.codes
         
     return df
 
@@ -50,5 +55,10 @@ def preprocess_data_trans(df):
     
     # Replace NaN values in categorical features with 'missing'
     df = df.apply(lambda x: x.fillna('missing') if x.dtype == 'object' else x)
+    
+    # Convert categorical features to numerical codes
+    categorical_features = df.select_dtypes(include=['object']).columns
+    for col in categorical_features:
+        df[col] = df[col].astype('category').cat.codes
         
     return df
