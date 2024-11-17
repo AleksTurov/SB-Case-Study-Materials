@@ -41,4 +41,4 @@ def test_predict_trans():
 if __name__ == "__main__":
     test_download_csv()
     test_predict_rent()
-    #test_predict_trans()
+    test_predict_trans()

@@ -35,7 +35,7 @@ async def predict_rent_from_csv(file: UploadFile = File(...)):
     try:
         # Чтение CSV файла
         contents = await file.read()
-        df = pd.read_csv(io.StringIO(contents.decode('utf-8')), low_memory=False).head(10)
+        df = pd.read_csv(io.StringIO(contents.decode('utf-8')), low_memory=False).head(100)
         
         # Предобработка данных
         df = preprocess_data_rents(df)
@@ -60,9 +60,14 @@ async def predict_rent_from_csv(file: UploadFile = File(...)):
         # Оценка модели
         rent_metrics = evaluate_model(df[TARGET_COLUMN_RENTS], df['rent_prediction'])
         
+        # Обработка NaN и бесконечных значений в предсказаниях
+        df.replace([np.inf, -np.inf], np.nan, inplace=True)
+        df.fillna(0, inplace=True)
+        
         return {
             "rent_metrics": rent_metrics,
-            "predictions": df.to_dict(orient='records')
+            "predictions": df.to_dict(orient='records'),
+            "rent_metrics": rent_metrics
         }
     except Exception as e:
         raise HTTPException(status_code=400, detail=str(e))
@@ -72,7 +77,7 @@ async def predict_trans_from_csv(file: UploadFile = File(...)):
     try:
         # Чтение CSV файла
         contents = await file.read()
-        df = pd.read_csv(io.StringIO(contents.decode('utf-8')), low_memory=False)
+        df = pd.read_csv(io.StringIO(contents.decode('utf-8')), low_memory=False).head(100)
         
         # Предобработка данных
         df = preprocess_data_trans(df)
@@ -97,9 +102,15 @@ async def predict_trans_from_csv(file: UploadFile = File(...)):
         # Оценка модели
         trans_metrics = evaluate_model(df[TARGET_COLUMN_TRANS], df['trans_prediction'])
         
+        # Обработка NaN и бесконечных значений в предсказаниях
+        df.replace([np.inf, -np.inf], np.nan, inplace=True)
+        df.fillna(0, inplace=True)
+        
         return {
             "trans_metrics": trans_metrics,
-            "predictions": df.to_dict(orient='records')
+            "predictions": df.to_dict(orient='records'),
+            "trans_metrics": trans_metrics
+
         }
     except Exception as e:
         raise HTTPException(status_code=400, detail=str(e))
